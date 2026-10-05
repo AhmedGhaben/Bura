@@ -60,7 +60,18 @@ class CardAndDeckTests(unittest.TestCase):
             Rank.ACE: 11,
         }
         self.assertEqual({rank: rank.points for rank in Rank}, expected)
+    def test_card_rejects_raw_values(self) -> None:
+        with self.assertRaises(TypeError):
+            Card("hearts", Rank.TEN)  # type: ignore[arg-type]
+        with self.assertRaises(TypeError):
+            Card(Suit.HEARTS, 7)  # type: ignore[arg-type]
 
+    def test_card_labels(self) -> None:
+        self.assertEqual(str(Card(Suit.HEARTS, Rank.TEN)), "10♥")
+        self.assertEqual(str(Card(Suit.SPADES, Rank.ACE)), "A♠")
+        self.assertEqual(str(Card(Suit.CLUBS, Rank.SIX)), "6♣")
+        self.assertEqual(Rank.QUEEN.label, "Q")
+        self.assertEqual(Suit.DIAMONDS.symbol, "♦")
 
 if __name__ == "__main__":
     unittest.main()
