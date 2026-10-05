@@ -33,6 +33,34 @@ class CardAndDeckTests(unittest.TestCase):
         second: list[Card] = [second_deck.draw() for _ in range(36)]
         self.assertEqual(first, second)
 
+    def test_rank_order_is_bura_order(self) -> None:
+        expected: list[Rank] = [
+            Rank.SIX,
+            Rank.SEVEN,
+            Rank.EIGHT,
+            Rank.NINE,
+            Rank.JACK,
+            Rank.QUEEN,
+            Rank.KING,
+            Rank.TEN,
+            Rank.ACE,
+        ]
+        self.assertEqual(sorted(Rank), expected)
+
+    def test_points_table(self) -> None:
+        expected: dict[Rank, int] = {
+            Rank.SIX: 0,
+            Rank.SEVEN: 0,
+            Rank.EIGHT: 0,
+            Rank.NINE: 0,
+            Rank.JACK: 2,
+            Rank.QUEEN: 3,
+            Rank.KING: 4,
+            Rank.TEN: 10,
+            Rank.ACE: 11,
+        }
+        self.assertEqual({rank: rank.points for rank in Rank}, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
