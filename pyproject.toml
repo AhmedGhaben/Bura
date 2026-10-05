@@ -8,9 +8,14 @@ version = "0.1.0"
 description = "A Bura card game for Python Development Practice"
 readme = "README.md"
 requires-python = ">=3.14"
+dependencies = ["pygame-ce>=2.5.8,<3"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov>=5", "mypy>=1.13"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
