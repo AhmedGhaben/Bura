@@ -1,0 +1,1 @@
+"""Pygame user interface for Bura. Only this package may import pygame."""
