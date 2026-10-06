@@ -9,6 +9,7 @@ class Deck:
     """Own a shuffled pack with one card of every suit and Bura rank."""
 
     def __init__(self, rng: Random | None = None) -> None:
+        """Create all 36 cards and shuffle them, using ``rng`` if given."""
         cards: list[Card] = [Card(suit, rank) for suit in Suit for rank in Rank]
         (rng if rng is not None else Random()).shuffle(cards)
         self._cards: list[Card] = cards
