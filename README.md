@@ -1,7 +1,7 @@
 # Bura Card Game
 
 A Python project for the Python Development Practice course. This is an early
-milestone: cards, a deck, scoring, and single-card trick comparison are
+milestone: cards, a deck, scoring, and multi-card trick resolution are
 implemented and tested. A Pygame table preview is available; the game is not
 yet playable.
 
@@ -47,9 +47,9 @@ Molodka may be added later.)
 1. Card and deck model, scoring, and tests (done)
 2. Single-card trick comparison (done)
 3. Pygame table preview (done)
-4. Review fixes: card validation, display labels, separate `gui` package (current)
-5. Multi-card trick resolution
-6. Dealing, the deal engine, Bura, and full matches
+4. Review fixes: card validation, display labels, separate `gui` package (done)
+5. Multi-card trick resolution (done)
+6. Dealing, the deal engine, Bura, and full matches (next)
 7. Player vs Player in the Pygame interface
 8. Algorithmic opponents with three difficulty levels
 9. LLM opponent and opponent selector
