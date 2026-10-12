@@ -12,7 +12,7 @@ class ArchitectureTests(unittest.TestCase):
     def test_logic_does_not_import_pygame(self) -> None:
         code: str = (
             "import sys\n"
-            "import bura.cards, bura.deck, bura.rules\n"
+            "import bura.cards, bura.deck, bura.rules, bura.dealing\n"
             "print('pygame' in sys.modules)\n"
         )
         env: dict[str, str] = {**os.environ, "PYTHONPATH": os.pathsep.join(sys.path)}
