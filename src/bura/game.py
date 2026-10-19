@@ -6,11 +6,13 @@ from itertools import combinations
 from random import Random
 from typing import Self
 
-from bura.actions import Action, Lead, Respond
-from bura.cards import Card, Suit
+from bura.actions import Action, Claim, Lead, Respond
+from bura.cards import Card, Suit, trick_points
 from bura.dealing import DealSetup, Seat, deal
 from bura.deck import Deck
 from bura.rules import MAX_TRICK_CARDS, TrickResult, is_valid_lead, resolve_trick
+
+WINNING_POINTS: int = 31
 
 
 class Phase(Enum):
@@ -173,6 +175,7 @@ class Deal:
         else:
             for cards in combinations(hand, len(self._lead)):
                 actions.append(Respond(cards))
+        actions.append(Claim())
         return actions
 
     def apply(self, seat: Seat, action: Action) -> TrickResult | None:
@@ -194,8 +197,9 @@ class Deal:
                 return None
             case Respond(cards=cards):
                 return self._play_response(seat, cards)
-            case _:
-                raise IllegalActionError(f"{action!r} is not available yet")
+            case Claim():
+                self._claim(seat)
+                return None
 
     def _check_cards_in_hand(self, seat: Seat, cards: tuple[Card, ...]) -> None:
         """Raise unless the cards are different and all in the player's hand."""
@@ -242,6 +246,20 @@ class Deal:
         if not self._hands[Seat.ONE] and not self._hands[Seat.TWO]:
             self._finish(DealResult(winner=None, reason=EndReason.EXHAUSTED))
         return result
+
+    def _claim(self, seat: Seat) -> None:
+        """Stop the hand: the claimant wins with 31 points, otherwise loses."""
+
+        points: int = trick_points(self._captured[seat])
+        if points >= WINNING_POINTS:
+            result: DealResult = DealResult(
+                seat, EndReason.CORRECT_CLAIM, claimant=seat, claimant_points=points
+            )
+        else:
+            result = DealResult(
+                seat.other, EndReason.FALSE_CLAIM, claimant=seat, claimant_points=points
+            )
+        self._finish(result)
 
     def _refill(self, winner: Seat, count: int) -> None:
         """Draw back up to three cards, the trick winner drawing first.
