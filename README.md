@@ -1,9 +1,8 @@
 # Bura Card Game
 
-A Python project for the Python Development Practice course. This is an early
-milestone: cards, a deck, scoring, and multi-card trick resolution are
-implemented and tested. A Pygame table preview is available; the game is not
-yet playable.
+A Python project for the Python Development Practice course. Two people can
+play a full match of two-player Bura on one shared screen, with a hand-over
+screen between turns. Computer opponents are the next milestone.
 
 ## Rules used in this project
 
@@ -49,19 +48,33 @@ Molodka may be added later.)
 3. Pygame table preview (done)
 4. Review fixes: card validation, display labels, separate `gui` package (done)
 5. Multi-card trick resolution (done)
-6. Dealing, the deal engine, Bura, and full matches (next)
-7. Player vs Player in the Pygame interface
-8. Algorithmic opponents with three difficulty levels
+6. Dealing, the deal engine, claims, Bura, and full matches (done)
+7. Player vs Player in the Pygame interface (done)
+8. Algorithmic opponents with three difficulty levels (next)
 9. LLM opponent and opponent selector
-10. Logging, CI and extra features
+10. CI and extra features
 
 The separate Durak competition bot is developed on its own.
+
+## How to play
+
+Run `python -m bura` and choose **New 2-player match**. Players share one
+screen: a hand-over screen hides the cards while the device is passed.
+
+- Click cards in your hand to raise them, then press **Play**. Play is enabled
+  only when the raised cards are a legal lead (1 to 3 cards of one suit) or a
+  legal answer (the same number of cards).
+- Press **Claim 31** just before acting if you believe you hold 31 points or
+  more; you are asked to confirm, because a false claim loses the hand.
+- After you answer, a screen shows which cards beat which and who won the trick.
+- Escape closes the window. Messages are written to `bura.log`.
 
 ## Project layout
 
 ```text
-src/bura/          game logic (never imports pygame)
-src/bura/gui/      Pygame user interface
+src/bura/          game logic (never imports pygame): cards, deck, rules,
+                   dealing, game (one hand), match, view, presentation
+src/bura/gui/      Pygame user interface (the only code that imports pygame)
 tests/             automated tests
 ```
 
@@ -77,5 +90,4 @@ python -m pytest
 python -m bura
 ```
 
-Close the window or press Escape to exit. This preview does not deal cards or
-play turns yet; those features will connect to the table in later milestones.
+Close the window or press Escape to exit.
