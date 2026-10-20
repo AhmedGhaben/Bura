@@ -217,4 +217,5 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-.mypy_cache/
+.mypy_cache/bura.log
+*.zip
