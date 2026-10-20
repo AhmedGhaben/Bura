@@ -83,14 +83,16 @@ class RandomGameTests(unittest.TestCase):
             deal: Deal = play_random_hand(seed)
 
             self.assertIs(deal.phase, Phase.FINISHED, f"seed {seed}")
-            self.assertIsNotNone(deal.result)
             assert deal.result is not None
-            self.assertIs(deal.result.reason, EndReason.EXHAUSTED)
-            self.assertIsNone(deal.result.winner)
             self.assertEqual(count_all_cards(deal), DECK_SIZE)
-            self.assertEqual(deal.stock_size, 0)
-            self.assertEqual(len(deal.hand(Seat.ONE)), 0)
-            self.assertEqual(len(deal.hand(Seat.TWO)), 0)
+            if deal.result.reason is EndReason.BURA:
+                self.assertIsNotNone(deal.result.winner)
+            else:
+                self.assertIs(deal.result.reason, EndReason.EXHAUSTED)
+                self.assertIsNone(deal.result.winner)
+                self.assertEqual(deal.stock_size, 0)
+                self.assertEqual(len(deal.hand(Seat.ONE)), 0)
+                self.assertEqual(len(deal.hand(Seat.TWO)), 0)
 
     def test_some_random_hands_set_cards_aside(self) -> None:
         aside: list[int] = [

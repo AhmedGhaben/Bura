@@ -13,6 +13,8 @@ class ArchitectureTests(unittest.TestCase):
         code: str = (
             "import sys\n"
             "import bura.cards, bura.deck, bura.rules, bura.dealing\n"
+            "import bura.actions, bura.game, bura.view, bura.match\n"
+            "import bura.presentation, bura.log_config\n"
             "print('pygame' in sys.modules)\n"
         )
         env: dict[str, str] = {**os.environ, "PYTHONPATH": os.pathsep.join(sys.path)}

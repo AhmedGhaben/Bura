@@ -1,5 +1,6 @@
 """One hand of Bura: turns, tricks, drawing cards, and how the hand ends."""
 
+import logging
 from dataclasses import dataclass
 from enum import Enum
 from itertools import combinations
@@ -8,11 +9,13 @@ from typing import Self
 
 from bura.actions import Action, Claim, Lead, Respond
 from bura.cards import Card, Suit, trick_points
-from bura.dealing import DealSetup, Seat, deal
+from bura.dealing import HAND_SIZE, DealSetup, Seat, deal
 from bura.deck import Deck
 from bura.rules import MAX_TRICK_CARDS, TrickResult, is_valid_lead, resolve_trick
 
 WINNING_POINTS: int = 31
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class Phase(Enum):
@@ -28,6 +31,7 @@ class EndReason(Enum):
 
     CORRECT_CLAIM = "correct claim"
     FALSE_CLAIM = "false claim"
+    BURA = "three trumps"
     EXHAUSTED = "all cards played"
 
 
@@ -66,6 +70,7 @@ class Deal:
         self._phase: Phase = Phase.LEAD
         self._result: DealResult | None = None
         self._last_trick: TrickResult | None = None
+        self._check_bura()
 
     @classmethod
     def start(cls, dealer: Seat, rng: Random | None = None) -> Self:
@@ -191,6 +196,7 @@ class Deal:
         if seat is not self.to_act:
             raise IllegalActionError(f"It is not {seat.name}'s turn")
 
+        logger.debug("%s plays %s", seat.name, action)
         match action:
             case Lead(cards=cards):
                 self._play_lead(seat, cards)
@@ -245,6 +251,8 @@ class Deal:
 
         if not self._hands[Seat.ONE] and not self._hands[Seat.TWO]:
             self._finish(DealResult(winner=None, reason=EndReason.EXHAUSTED))
+        else:
+            self._check_bura()
         return result
 
     def _claim(self, seat: Seat) -> None:
@@ -260,6 +268,21 @@ class Deal:
                 seat.other, EndReason.FALSE_CLAIM, claimant=seat, claimant_points=points
             )
         self._finish(result)
+
+    def _check_bura(self) -> None:
+        """End the hand at once if a player holds three trumps (a Bura).
+
+        This is checked at the start of every trick. If both players hold
+        one, the player who is about to lead wins.
+        """
+
+        for seat in (self._leader, self._leader.other):
+            hand: list[Card] = self._hands[seat]
+            if len(hand) == HAND_SIZE and all(
+                card.suit is self.trump_suit for card in hand
+            ):
+                self._finish(DealResult(winner=seat, reason=EndReason.BURA))
+                return
 
     def _refill(self, winner: Seat, count: int) -> None:
         """Draw back up to three cards, the trick winner drawing first.
@@ -281,3 +304,4 @@ class Deal:
 
         self._result = result
         self._phase = Phase.FINISHED
+        logger.info("Hand finished: %s", result)
